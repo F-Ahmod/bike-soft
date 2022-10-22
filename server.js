@@ -23,6 +23,7 @@ async function run() {
     await client.connect();
     const database = client.db("bike-software");
     const bikes_model = database.collection("bikes");
+    const bikes_name = database.collection("addBikes");
     const purchase_model = database.collection("purchase");
     const usersCallection = database.collection("users");
 
@@ -36,56 +37,74 @@ async function run() {
         return res.status(500).send(err);
       }
     });
-   
+    // post
 
-   
-
-  
+    app.post("/purchase", async (req, res) => {
+      await purchase_model.insertOne(req.body);
+      return res.status(200).send("inserted");
+    });
 
     //post
-    app.post("/addplans", async (req, res) => {
-      await bikes_model.insertOne(req.body);
+    app.post("/addBikes", async (req, res) => {
+      await bikes_name.insertOne(req.body);
       res.send("added");
     });
 
+   //get
+    app.get("/purchase", async (req, res) => {
+      const purchase =await  purchase_model.find({}).toArray();
+      return res.status(200).send(purchase);
+    });
+
+   //get
+    app.get("/addBikes", async (req, res) => {
+      const purchase =await  bikes_name.find({}).toArray();
+      return res.status(200).send(purchase);
+    });
+
     //post
 
-    app.post("/saveplan", async (req, res) => {
-      try {
-        const plan = await purchase_model.insertOne(req.body);
-        const { email, text } = req.headers;
-        var transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: "clubpj38@gmail.com",
-            pass: "xbltifhcpmxrhjbc",
-          },
-        });
+    // app.post("/saveplan", async (req, res) => {
+    //   try {
+    //     const plan = await purchase_model.insertOne(req.body);
+    //     const { email, text } = req.headers;
+    //     var transporter = nodemailer.createTransport({
+    //       service: "gmail",
+    //       auth: {
+    //         user: "clubpj38@gmail.com",
+    //         pass: "xbltifhcpmxrhjbc",
+    //       },
+    //     });
 
-        var mailOptions = {
-          from: "clubpj38@gmail.com",
-          to: email,
-          subject: "payment link",
-          text: text,
-        };
+    //     var mailOptions = {
+    //       from: "clubpj38@gmail.com",
+    //       to: email,
+    //       subject: "payment link",
+    //       text: text,
+    //     };
 
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log("Email sent: " + info.response);
-          }
-        });
-        return res.status(200).send(plan);
-      } catch (err) {
-        console.log(err);
-        return res.status(500).send(err);
-      }
-    });
+    //     transporter.sendMail(mailOptions, function (error, info) {
+    //       if (error) {
+    //         console.log(error);
+    //       } else {
+    //         console.log("Email sent: " + info.response);
+    //       }
+    //     });
+    //     return res.status(200).send(plan);
+    //   } catch (err) {
+    //     console.log(err);
+    //     return res.status(500).send(err);
+    //   }
+    // });
+
+
+    //GET
 
     app.get("/plans/:uid", async (req, res) => {
       try {
-        const plans = await purchase_model.find({ uid: req.params.uid }).toArray();
+        const plans = await purchase_model
+          .find({ uid: req.params.uid })
+          .toArray();
         return res.status(200).send(plans);
       } catch (err) {
         console.log(err);
@@ -93,7 +112,6 @@ async function run() {
       }
     });
 
-   
     // add user info
     app.post("/users", async (req, res) => {
       const result = await usersCallection.insertOne(req.body);
@@ -121,7 +139,6 @@ async function run() {
       }
       return res.status(200).send(false);
     });
-
 
     app.get("/planDetails/:id", async (req, res) => {
       try {
