@@ -22,7 +22,7 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("bike-software");
-    const bikes_model = database.collection("bikes");
+    // const bikes_model = database.collection("bikes");
     const bikes_name = database.collection("addBikes");
     const purchase_model = database.collection("purchase");
     const usersCallection = database.collection("users");
@@ -56,47 +56,55 @@ async function run() {
       return res.status(200).send(purchase);
     });
 
+    //get newpurhase
+    app.post('/newpurhase',async(req,res) => {
+      try{
+        console.log(req.body);
+        const new_purchased = await purchase_model.find({date: req.body.date}).toArray();
+      return res.status(200).send(new_purchased)
+      }
+      catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+    })
+
    //get
     app.get("/addBikes", async (req, res) => {
       const purchase =await  bikes_name.find({}).toArray();
       return res.status(200).send(purchase);
     });
 
-    //post
+     // delete Api
+     app.delete('/addBikes/:id', async (req, res) => {
+      const bikeId = req.params.id;
+      console.log(bikeId);
+      const qurey = { _id: ObjectId(bikeId) };
+      const result = await bikes_name.deleteOne(qurey);
+      res.json(result);
 
-    // app.post("/saveplan", async (req, res) => {
-    //   try {
-    //     const plan = await purchase_model.insertOne(req.body);
-    //     const { email, text } = req.headers;
-    //     var transporter = nodemailer.createTransport({
-    //       service: "gmail",
-    //       auth: {
-    //         user: "clubpj38@gmail.com",
-    //         pass: "xbltifhcpmxrhjbc",
-    //       },
-    //     });
 
-    //     var mailOptions = {
-    //       from: "clubpj38@gmail.com",
-    //       to: email,
-    //       subject: "payment link",
-    //       text: text,
-    //     };
+    })
 
-    //     transporter.sendMail(mailOptions, function (error, info) {
-    //       if (error) {
-    //         console.log(error);
-    //       } else {
-    //         console.log("Email sent: " + info.response);
-    //       }
-    //     });
-    //     return res.status(200).send(plan);
-    //   } catch (err) {
-    //     console.log(err);
-    //     return res.status(500).send(err);
-    //   }
-    // });
+  // update 
 
+  app.put('/updateName',async(req,res) => {
+   try{
+    const {name} = req.body;
+    const id = req.query.id;
+    console.log(name);
+    console.log(id);
+    await bikes_name.updateOne({_id:ObjectId(id) }, {$set:{title:name}}) 
+    return res.status(200).send("Updated name")
+    
+   }
+   catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+  })
+
+    
 
     //GET
 
