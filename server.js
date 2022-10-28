@@ -22,9 +22,9 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("bike-software");
-    // const bikes_model = database.collection("bikes");
     const bikes_name = database.collection("addBikes");
     const purchase_model = database.collection("purchase");
+    const Buyer_Details = database.collection("BuyerDetails");
     const usersCallection = database.collection("users");
 
     // get
@@ -37,14 +37,33 @@ async function run() {
         return res.status(500).send(err);
       }
     });
-    // post
+    // purchase post
 
     app.post("/purchase", async (req, res) => {
       await purchase_model.insertOne(req.body);
       return res.status(200).send("inserted");
     });
+    //Buyer Details post
 
-    //post
+    app.post("/BuyerDetails", async (req, res) => {
+      await Buyer_Details.insertOne(req.body);
+      return res.status(200).send("inserted");
+    });
+
+     //Buyer Details get
+    app.get('/BuyerDetails',async(req,res) => {
+      try{
+        console.log(req.body);
+        const BuyerDetails = await Buyer_Details.find({date: req.body.date}).toArray();
+      return res.status(200).send(BuyerDetails)
+      }
+      catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+    })
+
+    // add Bikespost
     app.post("/addBikes", async (req, res) => {
       await bikes_name.insertOne(req.body);
       res.send("added");
