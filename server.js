@@ -24,6 +24,7 @@ async function run() {
     const database = client.db("bike-software");
     const bikes_name = database.collection("addBikes");
     const purchase_model = database.collection("purchase");
+    const dataInput_model = database.collection("dataInput");
     const Buyer_Details = database.collection("BuyerDetails");
     const usersCallection = database.collection("users");
 
@@ -37,12 +38,32 @@ async function run() {
         return res.status(500).send(err);
       }
     });
+
     // purchase post
 
     app.post("/purchase", async (req, res) => {
       await purchase_model.insertOne(req.body);
       return res.status(200).send("inserted");
     });
+
+    // purchase post
+     app.post("/dataInput", async (req, res) => {
+      await dataInput_model.insertOne(req.body);
+      return res.status(200).send("inserted");
+    });
+   // dataInput get
+    app.get("/dataInput", async (req, res) => {
+      try {
+        console.log(req.body);
+        const dataInput = await dataInput_model.find({
+        }).toArray();
+        return res.status(200).send(dataInput);
+      } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+    });
+
     //Buyer Details post
 
     app.post("/BuyerDetails", async (req, res) => {
@@ -50,18 +71,19 @@ async function run() {
       return res.status(200).send("inserted");
     });
 
-     //Buyer Details get
-    app.get('/BuyerDetails',async(req,res) => {
-      try{
+    //Buyer Details get
+    app.get("/BuyerDetails", async (req, res) => {
+      try {
         console.log(req.body);
-        const BuyerDetails = await Buyer_Details.find({date: req.body.date}).toArray();
-      return res.status(200).send(BuyerDetails)
-      }
-      catch (err) {
+        const BuyerDetails = await Buyer_Details.find({
+          date: req.body.date,
+        }).toArray();
+        return res.status(200).send(BuyerDetails);
+      } catch (err) {
         console.log(err);
         return res.status(500).send(err);
       }
-    })
+    });
 
     // add Bikespost
     app.post("/addBikes", async (req, res) => {
@@ -69,61 +91,59 @@ async function run() {
       res.send("added");
     });
 
-   //get
+    //get
     app.get("/purchase", async (req, res) => {
-      const purchase =await  purchase_model.find({}).toArray();
+      const purchase = await purchase_model.find({}).toArray();
       return res.status(200).send(purchase);
     });
 
     //get newpurhase
-    app.post('/newpurhase',async(req,res) => {
-      try{
+    app.post("/newpurhase", async (req, res) => {
+      try {
         console.log(req.body);
-        const new_purchased = await purchase_model.find({date: req.body.date}).toArray();
-      return res.status(200).send(new_purchased)
-      }
-      catch (err) {
+        const new_purchased = await purchase_model
+          .find({ date: req.body.date })
+          .toArray();
+        return res.status(200).send(new_purchased);
+      } catch (err) {
         console.log(err);
         return res.status(500).send(err);
       }
-    })
+    });
 
-   //get
+    //get
     app.get("/addBikes", async (req, res) => {
-      const purchase =await  bikes_name.find({}).toArray();
+      const purchase = await bikes_name.find({}).toArray();
       return res.status(200).send(purchase);
     });
 
-     // delete Api
-     app.delete('/addBikes/:id', async (req, res) => {
+    // delete Api
+    app.delete("/addBikes/:id", async (req, res) => {
       const bikeId = req.params.id;
       console.log(bikeId);
       const qurey = { _id: ObjectId(bikeId) };
       const result = await bikes_name.deleteOne(qurey);
       res.json(result);
+    });
 
+    // update
 
-    })
-
-  // update 
-
-  app.put('/updateName',async(req,res) => {
-   try{
-    const {name} = req.body;
-    const id = req.query.id;
-    console.log(name);
-    console.log(id);
-    await bikes_name.updateOne({_id:ObjectId(id) }, {$set:{title:name}}) 
-    return res.status(200).send("Updated name")
-    
-   }
-   catch (err) {
-    console.log(err);
-    return res.status(500).send(err);
-  }
-  })
-
-    
+    app.put("/updateName", async (req, res) => {
+      try {
+        const { name } = req.body;
+        const id = req.query.id;
+        console.log(name);
+        console.log(id);
+        await bikes_name.updateOne(
+          { _id: ObjectId(id) },
+          { $set: { title: name } }
+        );
+        return res.status(200).send("Updated name");
+      } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+    });
 
     //GET
 
