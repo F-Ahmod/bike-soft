@@ -47,16 +47,15 @@ async function run() {
     });
 
     // purchase post
-     app.post("/dataInput", async (req, res) => {
+    app.post("/dataInput", async (req, res) => {
       await dataInput_model.insertOne(req.body);
       return res.status(200).send("inserted");
     });
-   // dataInput get
+    // dataInput get
     app.get("/dataInput", async (req, res) => {
       try {
         console.log(req.body);
-        const dataInput = await dataInput_model.find({
-        }).toArray();
+        const dataInput = await dataInput_model.find({}).toArray();
         return res.status(200).send(dataInput);
       } catch (err) {
         console.log(err);
@@ -126,7 +125,7 @@ async function run() {
       res.json(result);
     });
 
-    // update
+    // update name
 
     app.put("/updateName", async (req, res) => {
       try {
@@ -139,6 +138,62 @@ async function run() {
           { $set: { title: name } }
         );
         return res.status(200).send("Updated name");
+      } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+    });
+    // update imge
+
+    app.put("/updateImage", async (req, res) => {
+      try {
+        const { imageUrlsname } = req.body;
+        const id = req.query.id;
+       
+        await bikes_name.updateOne(
+          { _id: ObjectId(id) },
+          { $set: { imageUrls } }
+        );
+        return res.status(200).send("Updated image");
+      } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+    });
+    // update form
+
+    app.put("/updaateForm", async (req, res) => {
+      try {
+        const {
+          _id,
+          ownerName,
+          email,
+          addres,
+          companyName,
+          nationalIdNumber,
+          ragistrationNumber,
+          mobileNumber,
+          date,
+          rc
+        } = req.body;
+        
+        await purchase_model.updateOne(
+          { _id: ObjectId(_id) },
+          {
+            $set: {
+              ownerName,
+              email,
+              addres,
+              companyName,
+              nationalIdNumber,
+              ragistrationNumber,
+              mobileNumber,
+              date,
+              rc
+            },
+          }
+        );
+        return res.status(200).send("Updated form");
       } catch (err) {
         console.log(err);
         return res.status(500).send(err);
