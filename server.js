@@ -96,6 +96,15 @@ async function run() {
       return res.status(200).send(purchase);
     });
 
+    //get
+    app.post("/monthPurchase", async (req, res) => {
+      var d = new Date();
+      d.setMonth(d.getMonth() -1);
+      const monthPurchase = await purchase_model.find({month:req.body.month}).toArray();
+      return res.status(200).send(monthPurchase);
+      
+    });
+  
     //get newpurhase
     app.post("/newpurhase", async (req, res) => {
       try {
@@ -229,6 +238,8 @@ async function run() {
       res.send(documents);
     });
 
+
+
     //chack Admin
 
     app.get("/checkAdmin/:email", async (req, res) => {
@@ -258,6 +269,17 @@ async function run() {
     app.get("/user", async (req, res) => {
       try {
         const user = await usersCallection.findOne({ uid: req.body.uid });
+        res.send(user);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+
+
+    app.get("/admin", async (req, res) => {
+      try {
+        const user = await usersCallection.find({role:"admin"}).toArray();
         res.send(user);
       } catch (err) {
         console.log(err);
