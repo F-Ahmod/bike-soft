@@ -265,7 +265,7 @@ async function run() {
         console.log(er);
       }
     });
-
+// get
     app.get("/user", async (req, res) => {
       try {
         const user = await usersCallection.findOne({ uid: req.body.uid });
@@ -277,6 +277,7 @@ async function run() {
 
 
 
+// get admin
     app.get("/admin", async (req, res) => {
       try {
         const user = await usersCallection.find({role:"admin"}).toArray();
@@ -285,17 +286,17 @@ async function run() {
         console.log(err);
       }
     });
+// delete admin
 
-    app.post("/createPayment", async (req, res) => {
-      const amount = req.body.price * 100;
-      console.log(amount);
-      const paymentIntent = await stripe.paymentIntents.create({
-        currency: "usd",
-        amount: amount,
-        payment_method_types: ["card"],
-      });
-      res.json({ clientSecret: paymentIntent.client_secret });
-    });
+app.delete("/admin/:id", async (req, res) => {
+  const adminId = req.params.id;
+  console.log(adminId);
+  const qurey = { _id: ObjectId(adminId) };
+  const result = await usersCallection.updateOne(qurey,{ $set: { role:null },})
+
+  res.json(result);
+});
+    
 
     console.log("helllo world");
   } catch (err) {
