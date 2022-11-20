@@ -106,6 +106,20 @@ async function run() {
     // });
 
     app.post("/monthPurchase", async (req, res) => {
+      let demoMonths = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
       let months = [];
       let resMonths = [];
       const monthPurchase = await purchase_model.find({}).toArray();
@@ -119,6 +133,13 @@ async function run() {
         }
       }
       let count = {};
+      months.sort(function (a, b) {
+        return demoMonths.indexOf(a) - demoMonths.indexOf(b);
+      });
+      resMonths.sort(function (a, b) {
+        return demoMonths.indexOf(a) - demoMonths.indexOf(b);
+      });
+
       months.forEach(function (i) {
         count[i] = (count[i] || 0) + 1;
       });
