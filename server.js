@@ -97,12 +97,30 @@ async function run() {
     });
 
     //get
-    app.post("/monthPurchase", async (req, res) => {
-      var d = new Date();
-      d.setMonth(d.getMonth() -1);
-      const monthPurchase = await purchase_model.find({month:req.body.month}).toArray();
-      return res.status(200).send(monthPurchase);
+    // app.post("/monthPurchase", async (req, res) => {
+    //   var d = new Date();
+    //   d.setMonth(d.getMonth() -1);
+    //   const monthPurchase = await purchase_model.find({month:req.body.month}).toArray();
+    //   return res.status(200).send(monthPurchase);
       
+    // });
+
+    app.post("/monthPurchase", async (req, res) => {
+      let months = [];
+
+      const monthPurchase = await purchase_model.find({}).toArray();
+      for (const data of monthPurchase) {
+        let x = data.month;
+        if (x) {
+          months.push(x);
+        }
+      }
+      let count = {};
+      months.forEach(function (i) {
+        count[i] = (count[i] || 0) + 1;
+      });
+
+      return res.status(200).send(count);
     });
   
     //get newpurhase
