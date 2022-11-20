@@ -107,12 +107,15 @@ async function run() {
 
     app.post("/monthPurchase", async (req, res) => {
       let months = [];
-
+      let resMonths = [];
       const monthPurchase = await purchase_model.find({}).toArray();
       for (const data of monthPurchase) {
         let x = data.month;
         if (x) {
           months.push(x);
+          if (!resMonths.includes(x)) {
+            resMonths.push(x);
+          }
         }
       }
       let count = {};
@@ -120,7 +123,9 @@ async function run() {
         count[i] = (count[i] || 0) + 1;
       });
 
-      return res.status(200).send(count);
+      return res
+        .status(200)
+        .send([{ sellValue: count }, { months: resMonths }]);
     });
   
     //get newpurhase
